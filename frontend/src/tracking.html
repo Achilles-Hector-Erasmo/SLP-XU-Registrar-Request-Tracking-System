@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Results - XU Registrar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <style>
+        .tracking-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .status-processing { background-color: #f39c12; }
+        .status-ready { background-color: #27ae60; }
+        .status-received { background-color: #3498db; }
+        
+        .stage-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: #f8f9fa;
+            border-left: 4px solid #e9ecef;
+        }
+        
+        .stage-item.completed {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .stage-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .stage-icon.completed { background-color: #28a745; }
+        .stage-icon.pending { background-color: #6c757d; }
+        
+        .error-container {
+            text-align: center;
+            padding: 2rem;
+            background: #fff;
+            border: 6px solid #283971;
+            border-radius: 1.3rem;
+            box-shadow: 0 4px 16px #28397114;
+            color: #222;
+        }
+        
+        .error-icon {
+            font-size: 3rem;
+            color: #283971;
+            margin-bottom: 1rem;
+        }
+        
+        .back-button {
+            margin-bottom: 2rem;
+            margin-left: -15rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <img src="./assets/logo.png" alt="Xavier University Logo">
+            </div>
+        </div>
+    </nav>
+
+    <hr>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="tracking-container">
+            <div class="back-button">
+                <a href="/" class="button is-light">
+                    ← Back to Search
+                </a>
+            </div>
+
+            <!-- Request Status Title -->
+            <div class="has-text-centered mb-5">
+                <h1 class="title">Request Status</h1>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="has-text-centered" style="display: none;">
+                <div class="button is-loading is-large is-white"></div>
+                <p>Loading tracking information...</p>
+            </div>
+
+            <!-- Results Container -->
+            <div id="results-container" style="display: none;">
+                <!-- Success Results -->
+                <div id="success-results">
+                    <div class="custom-box-border" style="color: #222; text-align: left;">
+                        <h1 class="title is-3" id="tracking-title" style="color: #222; text-align: left;">Tracking Results</h1>
+                        <div class="columns">
+                            <div class="column is-half">
+                                <div class="field">
+                                    <label class="label" style="color: #222; font-weight: bold; font-size: 1.3rem;">Tracking Code</label>
+                                    <p id="tracking-code" class="is-size-5 has-text-weight-bold" style="color: #222;"></p>
+                                </div>
+                                <div class="field">
+                                    <label class="label" style="color: #222; font-weight: bold; font-size: 1.3rem;">Document Type</label>
+                                    <p id="document-type" class="is-size-5" style="color: #222;"></p>
+                                </div>
+                            </div>
+                            <div class="column is-half">
+                                <div class="field">
+                                    <label class="label" style="color: #222; font-weight: bold; font-size: 1.3rem;">Date Requested</label>
+                                    <p id="date-requested" class="is-size-5" style="color: #222;"></p>
+                                </div>
+                                <div class="field">
+                                    <label class="label" style="color: #222; font-weight: bold; font-size: 1.3rem;">Current Status</label>
+                                    <span id="status-badge" class="status-badge"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <h2 class="title is-3" style="color: #222; text-align: left; margin-top: 2rem; margin-bottom: 1rem;">Processing Stages</h2>
+                        <div id="stages-container"></div>
+                    </div>
+                </div>
+
+                <!-- Not Found Results -->
+                <div id="not-found-results" style="display: none;">
+                    <div class="error-container">
+                        <div class="error-icon">📄</div>
+                        <h1 class="title is-3 mb-4">Tracking Code Not Found</h1>
+                        <p class="subtitle" id="not-found-message" style="color: #222; font-size: 1.25rem;">
+                            The tracking code you entered was not found. Please check the code and try again.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Network Error Results -->
+                <div id="network-error-results" style="display: none;">
+                    <div class="error-container">
+                        <div class="error-icon">⚠️</div>
+                        <h1 class="title is-3 mb-4">Network Error</h1>
+                        <p class="subtitle" style="color: #222; font-size: 1.25rem;">
+                            Unable to connect to the server. Please check your internet connection and try again.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="custom-footer has-text-white">
+        <div class="container">
+            <div class="has-text-centered">
+                <p>Registrar's Office | Ground Floor, Xavier Hall | Tel: (088) 853-9800 loc. 9101</p>
+                <p>Office Hours: Monday to Friday, 8:00 AM - 5:00 PM</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./js/tracking.js"></script>
+</body>
+</html> 

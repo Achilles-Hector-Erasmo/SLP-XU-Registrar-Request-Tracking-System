@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - XU Registrar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <style>
+        /* Ensure Libre Baskerville font for ALL elements */
+        * {
+            font-family: 'Libre Baskerville', serif !important;
+        }
+        
+        /* Dashboard specific styles */
+        .dashboard-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .dashboard-card.total-students {
+            background: linear-gradient(135deg, var(--xu-primary) 0%, var(--xu-secondary) 100%);
+            color: white;
+        }
+        
+        .dashboard-card.completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .dashboard-card.pending {
+            background: #ffc107;
+            color: white;
+        }
+        
+        .dashboard-card.in-progress {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .dashboard-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+        
+        .dashboard-card p {
+            font-size: 1rem;
+            color: white;
+            margin: 0;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 2rem 1rem 0rem 2.5rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 3rem;
+            color: var(--xu-primary);
+            margin-bottom: 0.25rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+        }
+        
+        .dashboard-header p {
+            color: #495057;
+            font-size: 1.3rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 500;
+        }
+        
+        .recent-records-section {
+            color: #222;
+            background: #fff;
+            border: 6px solid var(--xu-dark);
+            border-radius: 1.3rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(40, 57, 113, 0.08);
+        }
+        
+        .recent-records-section h2 {
+            color: var(--xu-dark);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+        
+        .recent-records-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .recent-records-table table {
+            margin: 0;
+            background: white;
+            table-layout: fixed;
+            width: 100%;
+        }
+        
+        .recent-records-table th {
+            background: var(--xu-dark);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.2rem 1rem;
+            border: none;
+            font-size: 1.1rem;
+            font-family: 'Libre Baskerville', serif !important;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        .recent-records-table td {
+            padding: 1.2rem 1rem;
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+            color: #212529;
+            font-weight: 500;
+            font-size: 1rem;
+            font-family: 'Libre Baskerville', serif !important;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        /* Column width distribution */
+        .recent-records-table th:nth-child(1),
+        .recent-records-table td:nth-child(1) {
+            width: 12%;
+        }
+        
+        .recent-records-table th:nth-child(2),
+        .recent-records-table td:nth-child(2) {
+            width: 20%;
+        }
+        
+        .recent-records-table th:nth-child(3),
+        .recent-records-table td:nth-child(3) {
+            width: 18%;
+        }
+        
+        .recent-records-table th:nth-child(4),
+        .recent-records-table td:nth-child(4) {
+            width: 15%;
+        }
+        
+        .recent-records-table th:nth-child(5),
+        .recent-records-table td:nth-child(5) {
+            width: 15%;
+        }
+        
+        .recent-records-table th:nth-child(6),
+        .recent-records-table td:nth-child(6) {
+            width: 20%;
+        }
+        
+        /* Action buttons styling */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Action buttons table cell alignment */
+        .recent-records-table td:last-child {
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .recent-records-table th:last-child {
+            text-align: center;
+        }
+        
+        /* Status column alignment */
+        .recent-records-table th:nth-child(4),
+        .recent-records-table td:nth-child(4) {
+            text-align: center;
+        }
+        
+        /* Date column alignment */
+        .recent-records-table th:nth-child(5),
+        .recent-records-table td:nth-child(5) {
+            text-align: center;
+        }
+        
+        .action-buttons .button {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            min-width: 35px;
+            height: 35px;
+            padding: 0.25rem;
+            color: #ffffff !important;
+        }
+
+        .action-buttons .button.is-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #ffffff !important;
+        }
+
+        .action-buttons .button.is-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            color: #ffffff !important;
+        }
+
+        .action-buttons .button.is-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #ffffff !important;
+        }
+
+        .action-buttons .button.is-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            color: #ffffff !important;
+        }
+
+        /* Enhanced button styling for better visibility */
+        .button {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            color: #ffffff !important;
+        }
+
+        .button.is-primary {
+            background-color: var(--xu-primary);
+            border-color: var(--xu-primary);
+            color: #ffffff !important;
+        }
+
+        .button.is-primary:hover {
+            background-color: var(--xu-secondary);
+            border-color: var(--xu-secondary);
+            color: #ffffff !important;
+        }
+
+        .button.is-light {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #ffffff !important;
+        }
+
+        .button.is-light:hover {
+            background-color: #495057;
+            border-color: #495057;
+            color: #ffffff !important;
+        }
+        
+        /* Action icon styling */
+        .action-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+        
+
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Libre Baskerville', serif !important;
+            display: inline-block;
+            text-align: center;
+            min-width: 90px;
+        }
+        
+        .status-badge.pending {
+            background: #ffc107;
+            color: #000;
+            border: 1px solid #f0ad4e;
+        }
+        
+        .status-badge.done {
+            background: #28a745;
+            color: #fff;
+            border: 1px solid #1e7e34;
+        }
+        
+        .status-badge.in-progress {
+            background: #dc3545;
+            color: #fff;
+            border: 1px solid #bd2130;
+        }
+
+        /* Main layout container */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Light sidebar styling with collapsible functionality */
+        .sidebar {
+            background-color: #fff;
+            color: var(--xu-dark);
+            height: 100vh;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            border-right: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+            z-index: 30;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-menu .menu-list {
+            flex: 1;
+        }
+        
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            width: 100%;
+            overflow: visible;
+        }
+        
+        .sidebar-logo img {
+            width: 250px !important;
+            height: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            min-width: 250px !important;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        
+        .sidebar-menu .menu-label {
+            color: #6c757d !important;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .sidebar-menu .menu-list a {
+            color: #495057;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-menu .menu-list a:hover {
+            background-color: var(--xu-light);
+            color: var(--xu-primary);
+        }
+        
+        .sidebar-menu .menu-list a.is-active {
+            background-color: var(--xu-primary);
+            color: white;
+            font-weight: 700;
+        }
+        
+        /* Sidebar icon styling */
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+        
+        .sidebar-menu .menu-list a:hover .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(38%) sepia(76%) saturate(2618%) hue-rotate(217deg) brightness(95%) contrast(98%);
+        }
+        
+        .sidebar-menu .menu-list a.is-active .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+        
+        .logout-btn .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(20%) sepia(91%) saturate(6456%) hue-rotate(351deg) brightness(89%) contrast(90%);
+        }
+        
+        .logout-btn:hover .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 300px;
+            width: calc(100% - 300px);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 0;
+            width: 100%;
+        }
+        
+        /* Enhanced navbar */
+        .top-navbar {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 120px;
+        }
+        
+        /* Sidebar toggle button styling */
+        .sidebar-toggle-wrapper {
+            margin-right: 1rem !important;
+        }
+        
+                .sidebar-toggle-btn {
+            width: 70px;
+            height: 70px;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background-color: var(--xu-light);
+            border-radius: 8px;
+        }
+
+        .navbar-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+        
+        /* Search wrapper styling */
+        .search-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            color: #495057;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 500;
+            height: 60px;
+        }
+        
+        .search-input-wrapper input::placeholder {
+            color: #6c757d;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        /* Enhanced dropdown styling */
+        .select select {
+            background-color: #ffffff !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 8px !important;
+            color: #495057 !important;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+            height: 50px !important;
+            min-width: 150px !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .select select:focus {
+            border-color: var(--xu-primary) !important;
+            box-shadow: 0 0 0 0.125em rgba(58, 83, 164, 0.25) !important;
+            outline: none !important;
+        }
+
+        .select:not(.is-multiple):not(.is-loading)::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--xu-primary);
+            transform: translateY(-50%) rotate(0deg);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Dropdown arrow rotation when opened */
+        .select.is-open:not(.is-multiple):not(.is-loading)::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+
+        
+        .search-icon-img {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+        
+        /* Logout button styling */
+        .sidebar-logout {
+            margin-top: auto;
+            padding-top: 2rem;
+        }
+        
+        .logout-btn {
+            color: #dc3545 !important;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .logout-btn:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+        
+        .university-branding {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .university-branding img {
+            width: 80px;
+            height: auto;
+        }
+        
+        .university-text p {
+            color: var(--xu-primary);
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        /* Modal styling - White theme */
+        .modal {
+            z-index: 40;
+        }
+
+        .modal-background {
+            z-index: 40;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            margin: 0 auto;
+            z-index: 41;
+        }
+
+        .modal-card-head {
+            background-color: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 1.5rem;
+        }
+
+        .modal-card-title {
+            color: var(--xu-dark);
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .modal-card-body {
+            background-color: #ffffff;
+            color: var(--xu-dark);
+            font-family: 'Libre Baskerville', serif !important;
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .modal-card-foot {
+            background-color: #ffffff;
+            border-top: 2px solid #e0e0e0;
+            padding: 1.5rem;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Enhanced confirm modal styling */
+        #confirmModal .modal-card {
+            max-width: 450px;
+        }
+
+        #confirmModal .modal-card-head {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border-bottom: none;
+            text-align: center;
+            justify-content: center;
+        }
+
+        #confirmModal .modal-card-title {
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-align: center;
+            width: 100%;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        #confirmModal .modal-card-title:before {
+            content: '⚠️';
+            font-size: 2rem;
+        }
+
+        #confirmModal .modal-card-body {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        #confirmModal .button {
+            min-width: 120px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+        }
+
+        #confirmModal .button:not(.is-primary) {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        #confirmModal .button:not(.is-primary):hover {
+            background-color: #545b62;
+            border-color: #4e555b;
+        }
+
+        #confirmModal .button.is-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        #confirmModal .button.is-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 35;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
+        <!-- Light Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <img src="./assets/logo.png" alt="Xavier University Logo">
+            </div>
+            
+            <aside class="menu sidebar-menu">
+                <ul class="menu-list">
+                    <li>
+                        <a href="#" class="menu-item is-active">
+                            <span class="icon"><img src="./assets/home.png" alt="Home" class="sidebar-icon"></span>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./data-entry.html" class="menu-item">
+                            <span class="icon"><img src="./assets/data_entry.png" alt="Data Entry" class="sidebar-icon"></span>
+                            <span>Data Entry</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item">
+                            <span class="icon"><img src="./assets/audit_log.png" alt="Audit Log" class="sidebar-icon"></span>
+                            <span>Audit Log</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./access-control.html" class="menu-item">
+                            <span class="icon"><img src="./assets/access_control.png" alt="Access Control" class="sidebar-icon"></span>
+                            <span>Access Control</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="sidebar-logout">
+                    <a href="#" class="menu-item logout-btn" onclick="logout()">
+                        <span class="icon"><img src="./assets/logout.png" alt="Logout" class="sidebar-icon"></span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Top Navigation Bar -->
+            <nav class="top-navbar">
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item sidebar-toggle-wrapper">
+                            <button class="button is-white sidebar-toggle-btn" onclick="toggleSidebar()">
+                                <img src="./assets/sidebar.png" alt="Sidebar Toggle" class="navbar-icon">
+                            </button>
+                        </div>
+                        <div class="level-item search-wrapper">
+                            <div class="search-input-wrapper">
+                                <input class="input" type="text" placeholder="Search something here" id="searchInput">
+                                <img src="./assets/search.png" alt="Search" class="search-icon-img">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-right">
+                        <div class="level-item">
+                            <div class="university-branding">
+                                <img src="./assets/seal.png" alt="Xavier University Logo">
+                                <div class="university-text">
+                                    <p>Office of the University Registrar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1>Dashboard</h1>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <section class="section">
+                <div class="container-fluid">
+                    <!-- Stats Cards -->
+                    <div class="columns mb-5">
+                        <div class="column">
+                            <div class="dashboard-card total-students">
+                                <h3>156</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="dashboard-card completed">
+                                <h3>89</h3>
+                                <p>Completed</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="dashboard-card pending">
+                                <h3>42</h3>
+                                <p>Pending</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="dashboard-card in-progress">
+                                <h3>25</h3>
+                                <p>In Progress</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Student Records - Full Width -->
+                    <div class="columns">
+                        <div class="column">
+                            <div class="recent-records-section">
+                                <h2 class="title is-5">Recent Student Records</h2>
+                                <div class="recent-records-table">
+                                    <table class="table is-fullwidth">
+                                        <thead>
+                                            <tr>
+                                                <th>Control #</th>
+                                                <th>Student Name</th>
+                                                <th>Program</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>#12345</td>
+                                                <td>John Doe</td>
+                                                <td>Computer Science</td>
+                                                <td><span class="status-badge pending">PENDING</span></td>
+                                                <td>2024-01-15</td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="button is-small is-info" onclick="editStudent(12345)" title="Edit Record">
+                                                            <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                        </button>
+                                                        <button class="button is-small is-danger" onclick="deleteStudent(12345)" title="Delete Record">
+                                                            <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#12346</td>
+                                                <td>Jane Smith</td>
+                                                <td>Business Admin</td>
+                                                <td><span class="status-badge done">DONE</span></td>
+                                                <td>2024-01-14</td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="button is-small is-info" onclick="editStudent(12346)" title="Edit Record">
+                                                            <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                        </button>
+                                                        <button class="button is-small is-danger" onclick="deleteStudent(12346)" title="Delete Record">
+                                                            <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#12347</td>
+                                                <td>Bob Johnson</td>
+                                                <td>Engineering</td>
+                                                <td><span class="status-badge in-progress">IN PROGRESS</span></td>
+                                                <td>2024-01-13</td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="button is-small is-info" onclick="editStudent(12347)" title="Edit Record">
+                                                            <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                        </button>
+                                                        <button class="button is-small is-danger" onclick="deleteStudent(12347)" title="Delete Record">
+                                                            <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="has-text-centered mt-4">
+                                    <button class="button is-primary" style="color: white !important;">
+                                        <span>View All Records</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Edit Student Record</p>
+                <button class="delete" aria-label="close" onclick="hideModal('editStudentModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Last Name</label>
+                            <div class="control">
+                                <input class="input" type="text" id="editLastName">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">First Name</label>
+                            <div class="control">
+                                <input class="input" type="text" id="editFirstName">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Middle Name</label>
+                            <div class="control">
+                                <input class="input" type="text" id="editMiddleName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Public Comments</label>
+                    <div class="control">
+                        <textarea class="textarea" id="editPublicComments"></textarea>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Private Comments</label>
+                    <div class="control">
+                        <textarea class="textarea" id="editPrivateComments"></textarea>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" onclick="hideModal('editStudentModal')">Cancel</button>
+                <button class="button is-light" onclick="revertChanges()">Revert</button>
+                <button class="button is-primary" onclick="saveStudent()">Save Changes</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title" id="confirmTitle">Confirm Action</p>
+                <button class="delete" aria-label="close" onclick="hideModal('confirmModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <p id="confirmMessage"></p>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" id="confirmCancel" onclick="hideModal('confirmModal')">Cancel</button>
+                <button class="button is-primary" id="confirmOk">Confirm</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+    <script src="./js/dashboard.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Check if we're on mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Mobile behavior
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            } else {
+                // Desktop behavior
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('sidebar-collapsed');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth > 768) {
+                // Desktop: remove mobile classes
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            } else {
+                // Mobile: ensure proper state
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+            }
+        });
+
+        // Setup dropdown arrow rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDropdownArrows();
+        });
+
+        function setupDropdownArrows() {
+            // Handle all select elements
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                // Handle focus (dropdown opened)
+                select.addEventListener('focus', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.add('is-open');
+                    }
+                });
+
+                // Handle blur (dropdown closed)
+                select.addEventListener('blur', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('is-open');
+                    }
+                });
+
+                // Handle change (when option is selected)
+                select.addEventListener('change', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('is-open');
+                    }
+                });
+            });
+        }
+
+
+        
+        // Show confirm modal function
+        function showConfirmModal(title, message, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const confirmBtn = document.getElementById('confirmOk');
+            const cancelBtn = document.getElementById('confirmCancel');
+            
+            // Remove existing event listeners
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            const newConfirmBtn = document.getElementById('confirmOk');
+            
+            // Add new event listener
+            newConfirmBtn.addEventListener('click', function() {
+                hideModal('confirmModal');
+                if (onConfirm) onConfirm();
+            });
+            
+            // Show modal
+            document.getElementById('confirmModal').classList.add('is-active');
+        }
+
+        // Logout function
+        function logout() {
+            showConfirmModal(
+                'Confirm Logout',
+                'Are you sure you want to logout?',
+                function() {
+                    localStorage.removeItem('sessionToken');
+                    window.location.href = './index.html';
+                }
+            );
+        }
+        
+        // Edit student function
+        function editStudent(studentId) {
+            showNotification(`Edit functionality for student ${studentId} would be implemented here.`, 'info');
+        }
+        
+        // Delete student function
+        function deleteStudent(studentId) {
+            showConfirmModal(
+                'Delete Student Record',
+                `Are you sure you want to delete student record ${studentId}? This action cannot be undone.`,
+                function() {
+                    showNotification(`Student record ${studentId} would be deleted here.`, 'warning');
+                }
+            );
+        }
+    </script>
+</body>
+</html> 

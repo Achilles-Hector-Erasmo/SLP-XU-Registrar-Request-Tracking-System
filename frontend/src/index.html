@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XU Registrar Request Tracking System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
+        <div class="container is-flex is-align-items-center is-justify-content-space-between">
+            <div class="is-flex is-align-items-center">
+                <img src="./assets/logo.png" alt="Xavier University Logo">
+            </div>
+            <div>
+                <button onclick="handleGoogleLogin()" class="button is-white has-text-weight-bold">
+                    <img src="./assets/account.png" alt="Account">
+                    <span>Login</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <hr>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-10">
+                    <div class="has-text-centered mb-5">
+                        <h1 class="title">
+                            XU Registrar Request<br>Tracking System
+                        </h1>
+                    </div>
+
+                    <!-- Information Box -->
+                    <div class="custom-box-border mb-5">
+                        <div class="content">
+                            <p>
+                                Welcome to the Xavier University Registrar's Office document tracking portal.<br>
+                                Enter your request code below to check the status of your document request.
+                            </p>
+                            <p>
+                                Enter the control number along with your surname as your access key.
+                            </p>
+                            <div>
+                                <p>Control Number: 12345</p>
+                                <p>Surname: Erasmo</p>
+                                <p>Enter as: ERASMO_12345</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Form -->
+                    <form onsubmit="handleTrackingSearch(event)" class="mb-6">
+                        <div class="search-bar-pill">
+                            <input type="text" placeholder="Enter code..." id="trackingCode">
+                            <button type="submit">
+                                <img src="./assets/search.png" alt="Search">
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="custom-footer has-text-white">
+        <div class="container">
+            <div class="has-text-centered">
+                <p>Registrar's Office | Ground Floor, Xavier Hall | Tel: (088) 853-9800 loc. 9101</p>
+                <p>Office Hours: Monday to Friday, 8:00 AM - 5:00 PM</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide-static@0.294.0/dist/umd/lucide.min.js"></script>
+    <script type="module" src="./js/index.js"></script>
+</body>
+</html> 

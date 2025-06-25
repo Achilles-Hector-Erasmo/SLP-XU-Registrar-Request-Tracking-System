@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Control - XU Registrar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <style>
+        /* Ensure Libre Baskerville font for ALL elements */
+        * {
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        /* Main layout container */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Light sidebar styling with collapsible functionality */
+        .sidebar {
+            background-color: #fff;
+            color: var(--xu-dark);
+            height: 100vh;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            z-index: 30;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-menu .menu-list {
+            flex: 1;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .sidebar-logo img {
+            width: 250px !important;
+            height: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            min-width: 250px !important;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .sidebar-menu .menu-label {
+            color: #6c757d !important;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .sidebar-menu .menu-list a {
+            color: #495057;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu .menu-list a:hover {
+            background-color: var(--xu-light);
+            color: var(--xu-primary);
+        }
+
+        .sidebar-menu .menu-list a.is-active {
+            background-color: var(--xu-primary);
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Sidebar icon styling */
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+
+        .sidebar-menu .menu-list a:hover .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(38%) sepia(76%) saturate(2618%) hue-rotate(217deg) brightness(95%) contrast(98%);
+        }
+
+        .sidebar-menu .menu-list a.is-active .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+
+        .logout-btn .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(20%) sepia(91%) saturate(6456%) hue-rotate(351deg) brightness(89%) contrast(90%);
+        }
+
+        .logout-btn:hover .sidebar-icon {
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 300px;
+            width: calc(100% - 300px);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        /* Enhanced navbar */
+        .top-navbar {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 120px;
+        }
+
+        /* Sidebar toggle button styling */
+        .sidebar-toggle-wrapper {
+            margin-right: 1rem !important;
+        }
+
+        .sidebar-toggle-btn {
+            width: 70px;
+            height: 70px;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background-color: var(--xu-light);
+            border-radius: 8px;
+        }
+
+        .navbar-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+
+        /* Search wrapper styling */
+        .search-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            color: #495057;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 500;
+            height: 60px;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: #6c757d;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        .search-icon-img {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(15%) saturate(654%) hue-rotate(201deg) brightness(92%) contrast(90%);
+        }
+
+        /* Enhanced dropdown styling */
+        .select select {
+            background-color: #ffffff !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 8px !important;
+            color: #495057 !important;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+            height: 50px !important;
+            min-width: 150px !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .select select:focus {
+            border-color: var(--xu-primary) !important;
+            box-shadow: 0 0 0 0.125em rgba(58, 83, 164, 0.25) !important;
+            outline: none !important;
+        }
+
+        .select:not(.is-multiple):not(.is-loading)::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--xu-primary);
+            transform: translateY(-50%) rotate(0deg);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Dropdown arrow rotation when opened */
+        .select.is-open:not(.is-multiple):not(.is-loading)::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+
+
+        /* Logout button styling */
+        .sidebar-logout {
+            margin-top: auto;
+            padding-top: 2rem;
+        }
+
+        .logout-btn {
+            color: #dc3545 !important;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.75rem;
+        }
+
+        .logout-btn:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .university-branding {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .university-branding img {
+            width: 80px;
+            height: auto;
+        }
+
+        .university-text p {
+            color: var(--xu-primary);
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        /* Modal styling - White theme */
+        .modal {
+            z-index: 40;
+        }
+
+        .modal-background {
+            z-index: 40;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            margin: 0 auto;
+            z-index: 41;
+        }
+
+        .modal-card-head {
+            background-color: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 1.5rem;
+        }
+
+        .modal-card-title {
+            color: var(--xu-dark);
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .modal-card-body {
+            background-color: #ffffff;
+            color: var(--xu-dark);
+            font-family: 'Libre Baskerville', serif !important;
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .modal-card-foot {
+            background-color: #ffffff;
+            border-top: 2px solid #e0e0e0;
+            padding: 1.5rem;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Enhanced confirm modal styling */
+        #confirmModal .modal-card {
+            max-width: 450px;
+        }
+
+        #confirmModal .modal-card-head {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        #confirmModal .modal-card-head {
+            text-align: center;
+            justify-content: center;
+        }
+
+        #confirmModal .modal-card-title {
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-align: center;
+            width: 100%;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        #confirmModal .modal-card-title:before {
+            content: '⚠️';
+            font-size: 2rem;
+        }
+
+        #confirmModal .modal-card-body {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        #confirmModal .button {
+            min-width: 120px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+        }
+
+        #confirmModal .button:not(.is-primary) {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        #confirmModal .button:not(.is-primary):hover {
+            background-color: #545b62;
+            border-color: #4e555b;
+        }
+
+        #confirmModal .button.is-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        #confirmModal .button.is-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        /* White theme for tabs and tables - Clean design with black text */
+        .tabs {
+            background-color: #ffffff;
+        }
+
+        .tabs li a {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #e0e0e0;
+            border-bottom: none;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+        }
+
+        .tabs li.is-active a {
+            background-color: #ffffff !important;
+            color: var(--xu-primary) !important;
+            border-color: var(--xu-primary);
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .tabs li a:hover {
+            background-color: #f8f9fa !important;
+            color: var(--xu-primary) !important;
+        }
+
+        .box {
+            background-color: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(40, 57, 113, 0.08);
+        }
+
+        .table {
+            background-color: #ffffff;
+        }
+
+        .table th {
+            background-color: var(--xu-dark);
+            color: #ffffff;
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 700;
+            border: none;
+        }
+
+        .table td {
+            background-color: #ffffff;
+            color: var(--xu-dark);
+            font-family: 'Libre Baskerville', serif !important;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Access control specific styling */
+        .access-control-section {
+            color: #222;
+            background: #fff;
+            border: 6px solid var(--xu-dark);
+            border-radius: 1.3rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(40, 57, 113, 0.08);
+        }
+
+        .access-control-section h1, .access-control-section h3 {
+            color: var(--xu-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        .tabs {
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        .tabs a {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+        }
+
+        /* Enhanced button styling for better visibility */
+        .button {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            color: #ffffff !important;
+        }
+
+        .button.is-primary {
+            background-color: var(--xu-primary);
+            border-color: var(--xu-primary);
+            color: #ffffff !important;
+        }
+
+        .button.is-primary:hover {
+            background-color: var(--xu-secondary);
+            border-color: var(--xu-secondary);
+            color: #ffffff !important;
+        }
+
+        .button.is-light {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #ffffff !important;
+        }
+
+        .button.is-light:hover {
+            background-color: #495057;
+            border-color: #495057;
+            color: #ffffff !important;
+        }
+
+        .button.is-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #ffffff !important;
+        }
+
+        .button.is-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            color: #ffffff !important;
+        }
+
+        .button.is-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #ffffff !important;
+        }
+
+        .button.is-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            color: #ffffff !important;
+        }
+
+        /* Action buttons styling */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .action-buttons .button {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            min-width: 35px;
+            height: 35px;
+            padding: 0.25rem;
+            color: #ffffff !important;
+        }
+
+        /* Action icon styling */
+        .action-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        }
+
+        .table th, .table td {
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        /* Table column width styling for proper alignment */
+        #usersTable {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        #usersTable th:nth-child(1),
+        #usersTable td:nth-child(1) {
+            width: 20%; /* Name column */
+        }
+
+        #usersTable th:nth-child(2),
+        #usersTable td:nth-child(2) {
+            width: 30%; /* Email column */
+        }
+
+        #usersTable th:nth-child(3),
+        #usersTable td:nth-child(3) {
+            width: 25%; /* Role column */
+        }
+
+        #usersTable th:nth-child(4),
+        #usersTable td:nth-child(4) {
+            width: 15%; /* Status column */
+        }
+
+        #usersTable th:nth-child(5),
+        #usersTable td:nth-child(5) {
+            width: 10%; /* Actions column */
+            text-align: center;
+        }
+
+        /* Ensure text doesn't overflow in fixed width columns */
+        #usersTable th,
+        #usersTable td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            padding: 0.75rem;
+        }
+
+        /* Allow email column to wrap if needed */
+        #usersTable td:nth-child(2) {
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .field label {
+            font-family: 'Libre Baskerville', serif !important;
+            font-weight: 600;
+            color: var(--xu-dark);
+        }
+
+        .input, .textarea {
+            font-family: 'Libre Baskerville', serif !important;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #000000 !important;
+            font-weight: 500;
+        }
+
+        .input::placeholder, .textarea::placeholder {
+            color: #6c757d;
+            font-family: 'Libre Baskerville', serif !important;
+        }
+
+        .input:focus, .textarea:focus {
+            border-color: var(--xu-primary);
+            box-shadow: 0 0 0 0.125em rgba(58, 83, 164, 0.25);
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 35;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <!-- Light Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <img src="./assets/logo.png" alt="Xavier University Logo">
+            </div>
+            
+            <aside class="menu sidebar-menu">
+                <ul class="menu-list">
+                    <li>
+                        <a href="./dashboard.html" class="menu-item">
+                            <span class="icon"><img src="./assets/home.png" alt="Home" class="sidebar-icon"></span>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./data-entry.html" class="menu-item">
+                            <span class="icon"><img src="./assets/data_entry.png" alt="Data Entry" class="sidebar-icon"></span>
+                            <span>Data Entry</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item">
+                            <span class="icon"><img src="./assets/audit_log.png" alt="Audit Log" class="sidebar-icon"></span>
+                            <span>Audit Log</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item is-active">
+                            <span class="icon"><img src="./assets/access_control.png" alt="Access Control" class="sidebar-icon"></span>
+                            <span>Access Control</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="sidebar-logout">
+                    <a href="#" class="menu-item logout-btn" onclick="logout()">
+                        <span class="icon"><img src="./assets/logout.png" alt="Logout" class="sidebar-icon"></span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Top Navigation Bar -->
+            <nav class="top-navbar">
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item sidebar-toggle-wrapper">
+                            <button class="button is-white sidebar-toggle-btn" onclick="toggleSidebar()">
+                                <img src="./assets/sidebar.png" alt="Sidebar Toggle" class="navbar-icon">
+                            </button>
+                        </div>
+                        <div class="level-item search-wrapper">
+                            <div class="search-input-wrapper">
+                                <input class="input" type="text" placeholder="Search something here" id="searchInput">
+                                <img src="./assets/search.png" alt="Search" class="search-icon-img">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-right">
+                        <div class="level-item">
+                            <div class="university-branding">
+                                <img src="./assets/seal.png" alt="Xavier University Logo">
+                                <div class="university-text">
+                                    <p>Office of the University Registrar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <section class="section">
+                <div class="container-fluid">
+                    <div class="access-control-section">
+                        <div class="mb-5">
+                            <h1 class="title is-3">Access Control</h1>
+                            <p class="subtitle is-6 has-text-grey">Manage user accounts, roles, and permissions for the registrar system</p>
+                        </div>
+
+                        <div class="tabs is-boxed">
+                            <ul>
+                                <li class="is-active" id="usersTab">
+                                    <a onclick="switchTab('users')">
+                                        Team Members
+                                    </a>
+                                </li>
+                                <li id="rolesTab">
+                                    <a onclick="switchTab('roles')">
+                                        Roles & Permissions
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div id="usersContent" class="box">
+                            <div class="level mb-5">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <div class="search-input-wrapper">
+                                                    <input class="input" type="text" placeholder="Search users..." id="userSearch">
+                                                    <img src="./assets/search.png" alt="Search" class="search-icon-img">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <button class="button is-primary" onclick="showAddUserModal()">
+                                            <span class="icon"><i class="fas fa-plus"></i></span>
+                                            <span>Add User</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="table is-fullwidth is-hoverable" id="usersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Rangie Obispo</td>
+                                            <td>rangie.obispo@xu.edu.ph</td>
+                                            <td>System Administrator</td>
+                                            <td><span class="tag is-success">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="button is-small is-info" onclick="editUser(1)" title="Edit User">
+                                                        <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                    </button>
+                                                    <button class="button is-small is-danger" onclick="deleteUser(1)" title="Delete User">
+                                                        <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr> 
+                                        <tr>
+                                            <td>Dr. Maria Santos</td>
+                                            <td>registrar@xu.edu.ph</td>
+                                            <td>University Registrar</td>
+                                            <td><span class="tag is-success">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="button is-small is-info" onclick="editUser(2)" title="Edit User">
+                                                        <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                    </button>
+                                                    <button class="button is-small is-danger" onclick="deleteUser(2)" title="Delete User">
+                                                        <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>John Dela Cruz</td>
+                                            <td>evaluator@xu.edu.ph</td>
+                                            <td>Evaluator</td>
+                                            <td><span class="tag is-success">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="button is-small is-info" onclick="editUser(3)" title="Edit User">
+                                                        <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                    </button>
+                                                    <button class="button is-small is-danger" onclick="deleteUser(3)" title="Delete User">
+                                                        <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sarah Johnson</td>
+                                            <td>assistant@my.xu.edu.ph</td>
+                                            <td>Student Assistant</td>
+                                            <td><span class="tag is-warning">Inactive</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="button is-small is-info" onclick="editUser(4)" title="Edit User">
+                                                        <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                    </button>
+                                                    <button class="button is-small is-danger" onclick="deleteUser(4)" title="Delete User">
+                                                        <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mark Rodriguez</td>
+                                            <td>intern@my.xu.edu.ph</td>
+                                            <td>Intern</td>
+                                            <td><span class="tag is-success">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="button is-small is-info" onclick="editUser(5)" title="Edit User">
+                                                        <img src="./assets/edit.png" alt="Edit" class="action-icon">
+                                                    </button>
+                                                    <button class="button is-small is-danger" onclick="deleteUser(5)" title="Delete User">
+                                                        <img src="./assets/delete.png" alt="Delete" class="action-icon">
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="rolesContent" class="box" style="display: none;">
+                            <h3 class="title is-4">System Roles</h3>
+                            <p class="subtitle is-6 has-text-grey">Define and manage roles and their associated permissions.</p>
+
+                            <table class="table is-fullwidth is-hoverable mt-4">
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>System Administrator</td>
+                                        <td>Manages access control, whitelists users, assigns roles, and has full system control.</td>
+                                        <td>
+                                            <button class="button is-small is-info" onclick="showPermissionModal('SystemAdministrator')">View Permissions</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>University Registrar</td>
+                                        <td>All CRUD operations, can add intern/student assistant, assign permissions, and manage documents.</td>
+                                        <td>
+                                            <button class="button is-small is-info" onclick="showPermissionModal('UniversityRegistrar')">View Permissions</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Evaluator</td>
+                                        <td>Create data entry, edit status, mark as "Request Issued" or "Printed", and process documents.</td>
+                                        <td>
+                                            <button class="button is-small is-info" onclick="showPermissionModal('Evaluator')">View Permissions</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Student Assistant</td>
+                                        <td>Update/verify request information per registrar guidelines and coordinate with registrar.</td>
+                                        <td>
+                                            <button class="button is-small is-info" onclick="showPermissionModal('StudentAssistant')">View Permissions</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Intern</td>
+                                        <td>Limited access for verification tasks with read-only permissions.</td>
+                                        <td>
+                                            <button class="button is-small is-info" onclick="showPermissionModal('Intern')">View Permissions</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add New User</p>
+                <button class="delete" aria-label="close" onclick="hideModal('addUserModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="addUserName" placeholder="e.g., Jane Doe">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                        <input class="input" type="email" id="addUserEmail" placeholder="e.g., jane.doe@xu.edu.ph">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Role</label>
+                    <div class="control">
+                                                                <div class="select is-fullwidth">
+                                            <select id="addUserRole">
+                                                <option value="SystemAdministrator">System Administrator</option>
+                                                <option value="UniversityRegistrar">University Registrar</option>
+                                                <option value="Evaluator">Evaluator</option>
+                                                <option value="StudentAssistant">Student Assistant</option>
+                                                <option value="Intern">Intern</option>
+                                            </select>
+                                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" onclick="hideModal('addUserModal')">Cancel</button>
+                <button class="button is-primary" onclick="addUser()">Add User</button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="editUserModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Edit User</p>
+                <button class="delete" aria-label="close" onclick="hideModal('editUserModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editUserName">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                        <input class="input" type="email" id="editUserEmail">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Role</label>
+                    <div class="control">
+                                                                <div class="select is-fullwidth">
+                                            <select id="editUserRole">
+                                                <option value="SystemAdministrator">System Administrator</option>
+                                                <option value="UniversityRegistrar">University Registrar</option>
+                                                <option value="Evaluator">Evaluator</option>
+                                                <option value="StudentAssistant">Student Assistant</option>
+                                                <option value="Intern">Intern</option>
+                                            </select>
+                                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" onclick="hideModal('editUserModal')">Cancel</button>
+                <button class="button is-primary" onclick="saveUser()">Save</button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="permissionModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title" id="permissionModalTitle">Role Permissions</p>
+                <button class="delete" aria-label="close" onclick="hideModal('permissionModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <ul id="permissionList">
+                    </ul>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" onclick="hideModal('permissionModal')">Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title" id="confirmTitle">Confirm Action</p>
+                <button class="delete" aria-label="close" onclick="hideModal('confirmModal')"></button>
+            </header>
+            <section class="modal-card-body">
+                <p id="confirmMessage"></p>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" id="confirmCancel" onclick="hideModal('confirmModal')">Cancel</button>
+                <button class="button is-primary" id="confirmOk">Confirm</button>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Check if we're on mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Mobile behavior
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            } else {
+                // Desktop behavior
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('sidebar-collapsed');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth > 768) {
+                // Desktop: remove mobile classes
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            } else {
+                // Mobile: ensure proper state
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+            }
+        });
+
+        // Setup dropdown arrow rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDropdownArrows();
+        });
+
+        function setupDropdownArrows() {
+            // Handle all select elements
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                // Handle focus (dropdown opened)
+                select.addEventListener('focus', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.add('is-open');
+                    }
+                });
+
+                // Handle blur (dropdown closed)
+                select.addEventListener('blur', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('is-open');
+                    }
+                });
+
+                // Handle change (when option is selected)
+                select.addEventListener('change', function() {
+                    const wrapper = this.closest('.select, .status-sort-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('is-open');
+                    }
+                });
+            });
+        }
+
+        // Logout function
+        function logout() {
+            showConfirmModal(
+                'Confirm Logout',
+                'Are you sure you want to logout? You will be redirected to the login page.',
+                function() {
+                    localStorage.removeItem('sessionToken');
+                    window.location.href = './index.html';
+                }
+            );
+        }
+
+        // Show confirm modal function
+        function showConfirmModal(title, message, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const confirmBtn = document.getElementById('confirmOk');
+            const cancelBtn = document.getElementById('confirmCancel');
+            
+            // Remove existing event listeners
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            const newConfirmBtn = document.getElementById('confirmOk');
+            
+            // Add new event listener
+            newConfirmBtn.addEventListener('click', function() {
+                hideModal('confirmModal');
+                if (onConfirm) onConfirm();
+            });
+            
+            // Show modal
+            document.getElementById('confirmModal').classList.add('is-active');
+        }
+
+        // Edit user function
+        function editUser(userId) {
+            showNotification(`Edit functionality for user ${userId} would be implemented here.`, 'info');
+        }
+        
+        // Delete user function
+        function deleteUser(userId) {
+            showConfirmModal(
+                'Delete User',
+                `Are you sure you want to delete user ${userId}? This action cannot be undone.`,
+                function() {
+                    showNotification(`User ${userId} would be deleted here.`, 'warning');
+                }
+            );
+        }
+    </script>
+    <script src="./js/main.js"></script>
+    <script src="./js/access-control.js"></script>
+</body>
+</html> 

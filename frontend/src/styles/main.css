@@ -1,0 +1,351 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
+
+/* Xavier University Brand Colors */
+:root {
+--xu-primary: #3a53a4;
+--xu-secondary: #284b63;
+--xu-light: #f8f9fa;
+--xu-grey: #596780;
+--xu-dark: #313144;
+}
+
+body h1, h2, h3, h4, h5, h6, p, input, button, span, div, label {
+    font-family: 'Libre Baskerville', serif !important;
+}
+
+body {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Xavier University Styles */
+.has-text-primary {
+color: var(--xu-primary) !important;
+}
+
+.has-background-primary {
+background-color: var(--xu-primary) !important;
+}
+
+.button.is-primary {
+background-color: var(--xu-primary);
+border-color: var(--xu-primary);
+}
+
+.button.is-primary:hover {
+background-color: var(--xu-secondary);
+border-color: var(--xu-secondary);
+}
+
+/* XU Logo */
+.xu-logo {
+width: 64px;
+height: 64px;
+background-color: var(--xu-secondary);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.xu-logo span {
+color: white;
+font-weight: bold;
+font-size: 1.5rem;
+}
+
+/* Original Navbar Styles */
+.navbar {
+    box-shadow: none;
+    background: #fff;
+    border-bottom: none;
+    padding-top: 1rem;
+}
+
+.navbar img {
+    height: 100px;
+    max-height: none;
+    margin-bottom: 10px;
+}
+
+.navbar .button {
+    align-items: center;
+    font-size: 1.1rem;
+    display: flex;
+}
+
+.navbar .button img {
+    width: auto;
+    height: 56px;
+    margin: 0;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #e5e5e5;
+    margin: 0;
+}
+
+.section {
+    background: #fff;
+    padding-top: 3rem;
+    flex-grow: 1;
+}
+
+.title {
+    color: #222;
+    margin-bottom: 2.5rem;
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.custom-box-border {
+    color: #222;
+    text-align: center;
+    background: #fff;
+    border: 6px solid #283971;
+    border-radius: 1.3rem;
+    max-width: 1060px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem 1rem 1rem 1rem;
+    font-size: 24px;
+    box-shadow: 0 4px 16px #28397114;
+}
+
+.custom-box-border .content div p {
+    margin: 0.2;
+    line-height: 1.5;
+}
+
+.search-bar-pill {
+    box-sizing: border-box;
+    background: #f3f3f3;
+    border: 2px solid #e0e0e0;
+    border-radius: 2.5rem;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    padding: .5rem .5rem .5rem 1.5rem;
+    display: flex;
+    position: relative;
+    box-shadow: 0 2px 8px #3c3c3c12;
+    margin: 0 auto;
+}
+
+.search-bar-pill input {
+    color: #444;
+    box-shadow: none;
+    background: none;
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 0;
+    font-family: Libre Baskerville, serif;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.search-bar-pill button {
+    cursor: pointer;
+    background: #3a4fa4;
+    border: none;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    min-height: 64px;
+    transition: background .2s;
+    display: flex;
+    position: relative;
+    right: 35px;
+    box-shadow: 0 2px 8px #3c3c3c12;
+}
+
+.search-bar-pill button img {
+    width: 32px;
+    height: 32px;
+}
+
+.custom-footer {
+    background: #3A4FA4;
+    height: 143px;
+    padding: 1rem 0;
+}
+
+.custom-footer p {
+    font-size: 24px;
+    margin: 1rem 0;
+}
+
+/* Dashboard Sidebar Styles */
+.sidebar {
+background-color: var(--xu-dark);
+color: white;
+height: 100vh;
+padding: 1.5rem;
+position: sticky;
+top: 0;
+display: flex;
+flex-direction: column;
+}
+
+.sidebar-header {
+margin-bottom: 2rem;
+}
+
+.sidebar-menu {
+flex-grow: 1;
+}
+
+.sidebar-menu .menu-label {
+color: var(--xu-grey);
+}
+
+.sidebar-menu .menu-list a {
+color: white;
+padding: 0.75rem 1rem;
+display: flex;
+align-items: center;
+}
+
+.sidebar-menu .menu-list a .icon {
+margin-right: 0.5rem;
+color: var(--xu-grey);
+}
+
+.sidebar-menu .menu-list a:hover {
+background-color: var(--xu-secondary);
+}
+
+.sidebar-menu .menu-list a.is-active {
+background-color: var(--xu-primary);
+}
+
+.sidebar-menu .menu-item {
+display: block;
+padding: 0.75rem 1.5rem;
+color: var(--xu-dark);
+text-decoration: none;
+border: none;
+background: none;
+width: 100%;
+text-align: left;
+}
+
+.sidebar-menu .menu-item:hover {
+background-color: var(--xu-light);
+color: var(--xu-primary);
+}
+
+.sidebar-menu .menu-item.is-active {
+background-color: var(--xu-primary);
+color: white;
+}
+
+/* Status Tags */
+.tag.is-done {
+background-color: #48c774;
+color: white;
+}
+
+.tag.is-pending {
+background-color: #ffdd57;
+color: #363636;
+}
+
+.tag.is-cancelled {
+background-color: #f14668;
+color: white;
+}
+
+/* Status Circles for Sort Dropdown */
+.status-circle {
+display: inline-block;
+width: 12px;
+height: 12px;
+border-radius: 50%;
+margin-right: 8px;
+}
+
+.status-circle.done {
+background-color: #48c774;
+}
+
+.status-circle.pending {
+background-color: #ffdd57;
+}
+
+.status-circle.cancelled {
+background-color: #f14668;
+}
+
+/* Modal Enhancements */
+.modal-card {
+max-width: 800px;
+width: 90vw;
+}
+
+.modal-content {
+max-height: 80vh;
+overflow-y: auto;
+}
+
+/* Progress Tracker */
+.progress-tracker {
+position: relative;
+padding: 2rem 0;
+}
+
+.progress-tracker::before {
+content: '';
+position: absolute;
+top: 50%;
+left: 0;
+right: 0;
+height: 4px;
+background-color: #e0e0e0;
+z-index: 1;
+}
+
+.progress-step {
+position: relative;
+z-index: 2;
+}
+
+.step-circle {
+width: 48px;
+height: 48px;
+border-radius: 50%;
+background-color: #e0e0e0;
+border: 4px solid #e0e0e0;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto 1rem;
+color: #666;
+font-weight: bold;
+}
+
+.progress-step.completed .step-circle {
+background-color: #48c774;
+border-color: #48c774;
+color: white;
+}
+
+.progress-step.cancelled .step-circle {
+background-color: #f14668;
+border-color: #f14668;
+color: white;
+}
+
+.step-label {
+font-size: 0.875rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
